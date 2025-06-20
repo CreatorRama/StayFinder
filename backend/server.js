@@ -36,7 +36,7 @@ app.use(helmet({
 }));
 
 app.use(cors({
-  origin: ['http://localhost:5003'], // Add your frontend URL
+  origin: ['http://localhost:5003','https://stay-finder-4a7u.vercel.app'], // Add your frontend URL
   methods: ['GET', 'POST', 'PUT','PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
