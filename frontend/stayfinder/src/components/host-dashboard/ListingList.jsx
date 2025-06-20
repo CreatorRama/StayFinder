@@ -4,7 +4,7 @@ import ListingCard from './ListingCard';
 import Spinner from '../../components/ui/Spinner';
 import Alert from '../../components/ui/Alert';
 
-const ListingList = ({ onEdit,listings }) => {
+const ListingList = ({ onEdit,listings,refresh }) => {
   const {  loading, error, removeListing } = useHostListings();
   const [statusFilter, setStatusFilter] = useState('all');
   const [filteredListings,setfilteredListings]=useState([])
@@ -13,7 +13,11 @@ const ListingList = ({ onEdit,listings }) => {
     statusFilter === 'all' || listing.status === statusFilter
   );
   setfilteredListings(filter)
-  },[listings])
+  setTimeout(()=>{
+   const newfilter= refresh()
+    setfilteredListings(newfilter)
+  },1000)
+  },[])
 
   async function deletelisting(id){
     const response=await removeListing(id).unwrap()

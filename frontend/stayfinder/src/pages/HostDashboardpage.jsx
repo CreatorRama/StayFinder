@@ -22,10 +22,13 @@ const HostDashboardPage = () => {
     // Add this function to refresh listings
     const refreshListings = async () => {
         try {
-            await dispatch(fetchHostListings()).unwrap();
+            const response=await dispatch(fetchHostListings()).unwrap();
+            return response
         } catch (error) {
             console.error('Failed to fetch listings:', error);
         }
+
+
     };
 
     useEffect(() => {
@@ -70,6 +73,7 @@ const HostDashboardPage = () => {
                         {listings && listings.length > 0 ? (
                             <ListingList
                                 listings={listings}
+                                refresh={refreshListings}
                                 onEdit={(listing) => {
                                     setListing(listing);
                                     setActiveTab('edit');
