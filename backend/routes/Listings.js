@@ -56,7 +56,7 @@ const uploadListingImages = multer({
 // Helper function to process images
 const processImages = (files, existingImages = []) => {
   const newImages = files.map(file => ({
-    url: `http://localhost:5000/api/listingimages/${file.filename}`,
+    url: `https://stayfinder-yczq.onrender.com/api/listingimages/${file.filename}`,
     originalname: file.originalname,
     mimetype: file.mimetype,
     size: file.size,
