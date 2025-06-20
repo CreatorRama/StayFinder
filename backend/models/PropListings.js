@@ -120,7 +120,7 @@ const listingSchema = new mongoose.Schema({
     ]
   }],
   images: [{
-    url: { type: String, required: true, default: "http://localhost:5000/api/listingimages/default.png" },
+    url: { type: String, required: true, default: "https://stayfinder-yczq.onrender.com/api/listingimages/default.png" },
     originalname: { type: String, required: true },
     mimetype: { type: String, required: true },
     size: { type: Number, required: true },
