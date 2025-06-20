@@ -11,17 +11,19 @@ const ListingCard = ({ listing, onEdit, onDelete }) => {
 
   // Safe function to get image URL with fallback
   const getImageUrl = () => {
-  if (listing?.images && listing.images.length > 0) {
-    const firstImage = listing.images[0];
-    if (typeof firstImage === 'string') {
-      return firstImage;
-    } else if (firstImage && firstImage.url) {
-      return firstImage.url;
+    if (listing?.images && listing.images.length > 0) {
+      // Handle both object format {url: '...'} and direct URL string
+      const firstImage = listing.images[0];
+      if (typeof firstImage === 'string') {
+        return firstImage;
+      } else if (firstImage && firstImage.url) {
+        return firstImage.url;
+      }
     }
-  }
-  // Base64 encoded 1x1 gray pixel
-  return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZTVlN2ViIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxOCIgZmlsbD0iIzZiNzI4MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg==';
-};
+    // Return a placeholder image path - make sure this exists in your public folder
+    return '/images/pf.jpg';
+  };
+
   return (
     <div className="bg-white rounded-lg shadow overflow-hidden">
       <div className="relative">
@@ -31,7 +33,7 @@ const ListingCard = ({ listing, onEdit, onDelete }) => {
           className="w-full h-48 object-cover"
           onError={(e) => {
             // Fallback if image fails to load
-            e.target.src = '/images/placeholder-listing.jpg';
+            e.target.src = '/images/pf.jpg';
           }}
         />
         <span className={`absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-semibold ${statusColors[listing?.status] || statusColors.inactive}`}>

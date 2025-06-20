@@ -8,9 +8,13 @@ const ListingList = ({ onEdit,listings }) => {
   const {  loading, error, removeListing } = useHostListings();
   const [statusFilter, setStatusFilter] = useState('all');
 
-  const filteredListings = listings.filter(listing => 
+  useEffect(()=>{
+    setTimeout(()=>{
+    const filteredListings = listings.filter(listing => 
     statusFilter === 'all' || listing.status === statusFilter
   );
+  },1000)
+  },[listings])
 
   async function deletelisting(id){
     const response=await removeListing(id).unwrap()
