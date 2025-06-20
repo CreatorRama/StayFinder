@@ -1,7 +1,7 @@
 // store/store.js
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer from '../features/auth/authSlice';
-import listingsReducer from '../features/listings/listingslice';
+import listingsReducer from '../features/listings/listingSlice';
 import bookingsReducer from '../features/bookings/bookingSlice';
 import usersReducer from '../features/users/userSlice';
 import reviewsReducer from '../features/reviews/reviewSlice';
