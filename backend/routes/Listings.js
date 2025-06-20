@@ -661,7 +661,7 @@ router.delete('/:id/images/:imageId', auth, async (req, res) => {
     }
 
     // Delete the actual file from server
-    const filePath = path.join(__dirname,'routes', 'listingimages', path.basename(imageToDelete.url));
+    const filePath = path.join(__dirname, '../../listingimages', path.basename(imageToDelete.url));
     if (fs.existsSync(filePath)) {
       fs.unlinkSync(filePath);
     }
