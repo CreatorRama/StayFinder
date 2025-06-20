@@ -13,8 +13,8 @@ const ListingList = ({ onEdit,listings,refresh }) => {
     statusFilter === 'all' || listing.status === statusFilter
   );
   setfilteredListings(filter)
-  setTimeout(()=>{
-   const newfilter= refresh()
+  setTimeout(async ()=>{
+   const newfilter= await refresh()
     setfilteredListings(newfilter)
   },1000)
   },[])
