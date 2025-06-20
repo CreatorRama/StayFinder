@@ -7,10 +7,10 @@ import Alert from '../../components/ui/Alert';
 const ListingList = ({ onEdit,listings }) => {
   const {  loading, error, removeListing } = useHostListings();
   const [statusFilter, setStatusFilter] = useState('all');
-
+let filteredListings
   useEffect(()=>{
     setTimeout(()=>{
-    const filteredListings = listings.filter(listing => 
+     filteredListings = listings.filter(listing => 
     statusFilter === 'all' || listing.status === statusFilter
   );
   },1000)
