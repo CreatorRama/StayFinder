@@ -1,0 +1,30 @@
+# Backend
+backend/node_modules
+backend/.env
+backend/token.txt
+backend/package-lock.json
+backend/dist
+backend/*.log
+
+# Frontend
+frontend/stayfinder/node_modules
+frontend/stayfinder/.env
+frontend/stayfinder/package-lock.json
+frontend/stayfinder/.next  # if using Next.js
+frontend/stayfinder/build  # if using Create React App
+frontend/stayfinder/.nuxt  # if using Nuxt.js
+
+# IDE/Editor
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

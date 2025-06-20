@@ -1,0 +1,202 @@
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+}
+
+.solar-container {
+  width: 480px;
+  height: 480px;
+  position: relative;
+  background-color: hsl(0, 0%, 0%);;
+  margin: 0 auto;
+}
+
+.sun {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  background-color: #FDB813;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  margin-top: -24px;
+  margin-left: -24px;
+  box-shadow: 0 0 24px #FDB813;
+  z-index: 10;
+}
+
+.orbit {
+  position: absolute;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.planet {
+  position: absolute;
+  border-radius: 50%;
+  z-index: 5;
+}
+
+#mercury-orbit {
+  width: 96px;
+  height: 96px;
+}
+
+#venus-orbit {
+  width: 144px;
+  height: 144px;
+}
+
+#earth-orbit {
+  width: 192px;
+  height: 192px;
+}
+
+#mars-orbit {
+  width: 240px;
+  height: 240px;
+}
+
+#jupiter-orbit {
+  width: 300px;
+  height: 300px;
+}
+
+#saturn-orbit {
+  width: 360px;
+  height: 360px;
+}
+
+.star {
+  position: absolute;
+  background-color: white;
+  border-radius: 50%;
+}
+
+/* Spaceship styles */
+.spaceship {
+  position: absolute;
+  width: 80px;
+  height: 40px;
+  z-index: 20;
+}
+
+.spaceship-body {
+  position: absolute;
+  width: 80px;
+  height: 32px;
+  background-color: #C0C0C0;
+  border-radius: 40px;
+  top: 8px;
+}
+
+.spaceship-cockpit {
+  position: absolute;
+  width: 32px;
+  height: 16px;
+  background-color: #87CEEB;
+  border-radius: 16px 16px 0 0;
+  top: 0;
+  left: 24px;
+}
+
+.spaceship-window {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background-color: #D3D3D3;
+  border-radius: 50%;
+  top: 16px;
+}
+
+.spaceship-window:nth-child(1) {
+  left: 16px;
+}
+
+.spaceship-window:nth-child(2) {
+  left: 32px;
+}
+
+.spaceship-window:nth-child(3) {
+  left: 48px;
+}
+
+.spaceship-fin {
+  position: absolute;
+  width: 16px;
+  height: 20px;
+  background-color: #FF4500;
+  bottom: 0;
+}
+
+.spaceship-fin:nth-child(1) {
+  left: 8px;
+  transform: skew(30deg);
+}
+
+.spaceship-fin:nth-child(2) {
+  right: 8px;
+  transform: skew(-30deg);
+}
+
+.spaceship-engine {
+  position: absolute;
+  width: 28px;
+  height: 12px;
+  background-color: #1E1E1E;
+  bottom: -12px;
+  left: 26px;
+  border-radius: 0 0 14px 14px;
+}
+
+.spaceship-flame {
+  position: absolute;
+  width: 16px;
+  height: 24px;
+  background: linear-gradient(to bottom, #FF4500, #FFA500, transparent);
+  bottom: -36px;
+  left: 32px;
+  border-radius: 0 0 8px 8px;
+  opacity: 0.8;
+}
+
+/* Astronaut styles */
+.astronaut {
+  position: absolute;
+  width: 12px;
+  height: 16px;
+  z-index: 25;
+}
+
+.astronaut-head {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background-color: #FFE4B5;
+  border-radius: 50%;
+  top: 0;
+}
+
+.astronaut-body {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-color: #FFFFFF;
+  border-radius: 4px;
+  top: 10px;
+  left: 1px;
+}
+
+.astronaut1 {
+  top: 12px;
+  left: 30px;
+}
+
+.astronaut2 {
+  top: 12px;
+  left: 46px;
+}

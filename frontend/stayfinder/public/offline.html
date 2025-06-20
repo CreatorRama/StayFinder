@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline | My Application</title>
+    <style>
+        :root {
+            --primary-color: #4285f4;
+            --error-color: #ea4335;
+            --background: #f8f9fa;
+            --text-color: #202124;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 
+                        'Helvetica Neue', sans-serif;
+            background-color: var(--background);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 600px;
+            padding: 2rem;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: var(--error-color);
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        p {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 1.5rem;
+            border: 4px solid #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .retry-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .retry-button:hover {
+            background-color: #3367d6;
+        }
+        
+        .offline-icon {
+            font-size: 3rem;
+            color: var(--error-color);
+            margin-bottom: 1rem;
+        }
+        
+        .cached-content {
+            background: #fff;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+        
+        .cached-content h2 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="offline-icon">⚠️</div>
+        <h1>You're Offline</h1>
+        <img src="/images/pf.jpg" alt="Default Avatar" class="avatar">
+        <p>It looks like you've lost your internet connection. Don't worry, you can still access some content.</p>
+        
+        <button class="retry-button" id="retryButton">
+            <span>Retry Connection</span>
+            <span>↻</span>
+        </button>
+        
+        <div class="cached-content">
+            <h2>Available Offline Content</h2>
+            <p>While offline, you can still access:</p>
+            <ul style="text-align: left;">
+                <li>Previously viewed pages</li>
+                <li>Your profile information</li>
+                <li>Cached images and content</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('retryButton').addEventListener('click', function() {
+            if (!navigator.onLine) {
+                alert('Still offline. Please check your internet connection.');
+                return;
+            }
+            
+            // Attempt to reload the page
+            window.location.reload();
+            
+            // If reload doesn't work after 3 seconds, show message
+            setTimeout(() => {
+                if (!document.hidden) {
+                    alert('Connection restored but reload failed. Please refresh manually.');
+                }
+            }, 3000);
+        });
+
+        // Check for connection changes
+        window.addEventListener('online', () => {
+            // Auto-reload when connection is restored
+            window.location.reload();
+        });
+
+        // Show cached content indicator
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.ready.then(registration => {
+                if (registration.active) {
+                    console.log('Service Worker is active and serving cached content');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

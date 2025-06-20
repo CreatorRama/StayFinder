@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mock Payment</title>
+  <script src="https://js.stripe.com/v3/"></script>
+  <script src="/payment.js" defer></script>
+  <style>
+    #card-element {
+      margin: 10px 0;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Mock Payment ($10.00)</h1>
+  
+  <form id="payment-form">
+    <div id="card-element"></div>
+    <button id="submit">Pay Now</button>
+    <div id="payment-message"></div>
+  </form>
+</body>
+</html>
