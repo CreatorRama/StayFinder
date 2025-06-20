@@ -9,7 +9,7 @@ const ListingList = ({ onEdit,listings }) => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [filteredListings,setfilteredListings]=useState([])
   useEffect(()=>{
-   filter = listings.filter(listing => 
+   const filter = listings.filter(listing => 
     statusFilter === 'all' || listing.status === statusFilter
   );
   setfilteredListings(filter)
