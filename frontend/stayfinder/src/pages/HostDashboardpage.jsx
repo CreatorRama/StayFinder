@@ -67,18 +67,24 @@ const HostDashboardPage = () => {
                                 + Add New Listing
                             </button>
                         </div>
-                        <ListingList
-                            listings={listings}
-                            onEdit={(listing) => {
-                                setListing(listing);
-                                setActiveTab('edit');
-                            }}
-                        />
+                        {listings && listings.length > 0 ? (
+                            <ListingList
+                                listings={listings}
+                                onEdit={(listing) => {
+                                    setListing(listing);
+                                    setActiveTab('edit');
+                                }}
+                            />
+                        ) : (
+                            <div className="text-center py-8">
+                                <p>No listings found. Create your first listing!</p>
+                            </div>
+                        )}
                     </>
                 )}
 
                 {activeTab === 'create' && (
-                    <CreateListingForm 
+                    <CreateListingForm
                         onCancel={() => setActiveTab('listings')}
                         onSuccess={() => {
                             setActiveTab('listings');
@@ -88,8 +94,8 @@ const HostDashboardPage = () => {
                 )}
 
                 {activeTab === 'edit' && (
-                    <EditListingForm 
-                        listing={listing} 
+                    <EditListingForm
+                        listing={listing}
                         onCancel={() => setActiveTab('listings')}
                         onSuccess={() => {
                             setActiveTab('listings');
