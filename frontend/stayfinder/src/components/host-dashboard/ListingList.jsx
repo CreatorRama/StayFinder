@@ -7,13 +7,12 @@ import Alert from '../../components/ui/Alert';
 const ListingList = ({ onEdit,listings }) => {
   const {  loading, error, removeListing } = useHostListings();
   const [statusFilter, setStatusFilter] = useState('all');
-let filteredListings=[]
+  const [filteredListings,setfilteredListings]=useState([])
   useEffect(()=>{
-    setTimeout(()=>{
-     filteredListings = listings.filter(listing => 
+   filter = listings.filter(listing => 
     statusFilter === 'all' || listing.status === statusFilter
   );
-  },1000)
+  setfilteredListings(filter)
   },[listings])
 
   async function deletelisting(id){
