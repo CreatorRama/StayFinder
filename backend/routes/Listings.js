@@ -310,7 +310,7 @@ router.put('/:id',
       if (req.files?.length) {
         console.log('Processing new images:', req.files.length);
         const newImages = req.files.map(file => ({
-          url: `http://localhost:5000/api/listingimages/${file.filename}`,
+          url: `https://stayfinder-yczq.onrender.com/api/listingimages/${file.filename}`,
           originalname: file.originalname,
           mimetype: file.mimetype,
           size: file.size,
@@ -661,7 +661,7 @@ router.delete('/:id/images/:imageId', auth, async (req, res) => {
     }
 
     // Delete the actual file from server
-    const filePath = path.join(__dirname, '../../listingimages', path.basename(imageToDelete.url));
+    const filePath = path.join(__dirname,'routes', 'listingimages', path.basename(imageToDelete.url));
     if (fs.existsSync(filePath)) {
       fs.unlinkSync(filePath);
     }
