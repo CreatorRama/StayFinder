@@ -1,6 +1,6 @@
 // hooks/useListings.js
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchListings, fetchListingById } from '../features/listings/listingslice';
+import { fetchListings, fetchListingById } from '../features/listings/listingSlice';
 
 export function useListings() {
   const dispatch = useDispatch();
