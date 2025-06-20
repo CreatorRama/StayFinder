@@ -1,8 +1,7 @@
-import { BrowserRouter as Router, Routes, Route, useSearchParams, useParams, Outlet } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { store } from './store/store';
 import HomePage from './pages/HomePage';
-import ListingPage from './pages/ListingPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ProtectedRoute from './components/ProtectedRoute';
