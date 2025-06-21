@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { FaEdit, FaTrash, FaEye, FaBed, FaBath, FaUserFriends } from 'react-icons/fa';
-
+import {base64} from '../../utils/base64data'
 const ListingCard = ({ listing, onEdit, onDelete }) => {
   const statusColors = {
     draft: 'bg-yellow-100 text-yellow-800',
@@ -21,7 +21,7 @@ const ListingCard = ({ listing, onEdit, onDelete }) => {
       }
     }
     // Return a placeholder image path - make sure this exists in your public folder
-    return '/images/pf.jpg';
+    return base64;
   };
 
   return (
@@ -31,10 +31,6 @@ const ListingCard = ({ listing, onEdit, onDelete }) => {
           src={getImageUrl()}
           alt={listing?.title || 'Listing'}
           className="w-full h-48 object-cover"
-          onError={(e) => {
-            // Fallback if image fails to load
-            e.target.src = '/images/pf.jpg';
-          }}
         />
         <span className={`absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-semibold ${statusColors[listing?.status] || statusColors.inactive}`}>
           {listing?.status || 'draft'}
