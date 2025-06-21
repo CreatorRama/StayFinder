@@ -25,12 +25,10 @@ const ListingList = ({ onEdit, listings, refresh }) => {
   async function deletelisting(id) {
     const response = await removeListing(id).unwrap()
     console.log(response);
-    if (!filteredListings) {
       setTimeout(async () => {
         const newfilter = await refresh()
         setfilteredListings(newfilter)
       }, 800)
-    }
   }
 
   if (loading) return <Spinner />;
