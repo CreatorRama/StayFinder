@@ -79,43 +79,390 @@ stayfinder/
 
 ### User Model
 ```javascript
-{
-  name: String,
-  email: String,
-  password: String (hashed),
-  role: String (guest/host),
-  createdAt: Date
+firstName: {
+    type: String,
+    required: [true, 'First name is required'],
+    trim: true,
+    maxlength: [50, 'First name cannot exceed 50 characters']
+  },
+  lastName: {
+    
+    type: String,
+    required: [true, 'Last name is required'],
+    trim: true,
+    maxlength: [50, 'Last name cannot exceed 50 characters']
+  },
+  email: {
+    type: String,
+    required: [true, 'Email is required'],
+    unique: true,
+    lowercase: true,
+    match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email']
+  },
+  password: {
+    type: String,
+    required: [true, 'Password is required'],
+    minlength: [6, 'Password must be at least 6 characters'],
+    select: false
+  },
+  phone: {
+    type: String,
+    required: [true, 'Mobile Number is required'],
+    trim: true
+  },
+  avatar: {
+    type: String,
+    default: 'https://img.freepik.com/free-vector/smiling-young-man-illustration_1308-174669.jpg?semt=ais_hybrid&w=740'
+  },
+  dateOfBirth: Date,
+  role: {
+    type: String,
+    enum: ['guest', 'host', 'admin'],
+    default: 'guest'
+  },
+  isVerified: {
+    type: Boolean,
+    default: false
+  },
+  verificationToken: String,
+  resetPasswordToken: String,
+  resetPasswordExpire: Date,
+  location: {
+    address: String,
+    city: String,
+    country: String,
+    coordinates: {
+      lat: Number,
+      lng: Number
+    }
+  },
+  preferences: {
+    currency: {
+      type: String,
+      default: 'USD'
+    },
+    language: {
+      type: String,
+      default: 'en'
+    },
+    notifications: {
+      email: { type: Boolean, default: true },
+      sms: { type: Boolean, default: false },
+      push: { type: Boolean, default: true }
+    }
+  },
+  hostProfile: {
+    bio: String,
+    responseRate: { type: Number, default: 0 },
+    responseTime: String,
+    joinedDate: { type: Date, default: Date.now },
+    superhost: { type: Boolean, default: false },
+    verifications: [{
+      type: { type: String },
+      verified: { type: Boolean, default: false },
+      verifiedAt: Date
+    }]
+  }
+}, {
+  timestamps: true
 }
 ```
 
 ### Listing Model
 ```javascript
 {
-  title: String,
-  description: String,
-  price: Number,
-  location: {
-    address: String,
-    coordinates: [longitude, latitude]
+ title: {
+    type: String,
+    required: [true, 'Title is required'],
+    trim: true,
+    maxlength: [100, 'Title cannot exceed 100 characters']
   },
-  images: [String],
-  amenities: [String],
-  host: ObjectId (ref: User),
-  availability: [Date],
-  createdAt: Date
+  description: {
+    type: String,
+    required: [true, 'Description is required'],
+    maxlength: [2000, 'Description cannot exceed 2000 characters']
+  },
+  host: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  propertyType: {
+    type: String,
+    required: true,
+    enum: ['apartment', 'house', 'villa', 'condo', 'townhouse', 'cabin', 'loft', 'other']
+  },
+  roomType: {
+    type: String,
+    required: true,
+    enum: ['entire-place', 'private-room', 'shared-room']
+  },
+  location: {
+    address: { type: String, required: true },
+    city: { type: String, required: true },
+    country: { type: String, required: true },
+    coordinates: {
+      type: {
+        type: String,
+        enum: ['Point'],
+        required: true,
+        default: 'Point'
+      },
+      coordinates: {
+        type: [Number],
+        required: true,
+        default: [0, 0],
+        validate: {
+          validator: function (v) {
+            return v.length === 2 &&
+              v[0] >= -180 && v[0] <= 180 &&
+              v[1] >= -90 && v[1] <= 90;
+          },
+          message: props => `${props.value} is not a valid longitude/latitude pair`
+        }
+      }
+    }
+  },
+  pricing: {
+    basePrice: {
+      type: Number,
+      required: true,
+      min: [1, 'Price must be at least $1']
+    },
+    currency: {
+      type: String,
+      default: 'USD'
+    },
+    weeklyDiscount: {
+      type: Number,
+      min: 0,
+      max: 50,
+      default: 0
+    },
+    monthlyDiscount: {
+      type: Number,
+      min: 0,
+      max: 50,
+      default: 0
+    },
+    cleaningFee: {
+      type: Number,
+      default: 0
+    },
+    serviceFee: {
+      type: Number,
+      default: 0
+    },
+    taxRate: {
+      type: Number,
+      default: 0
+    }
+  },
+  capacity: {
+    guests: {
+      type: Number,
+      required: true,
+      min: 1
+    },
+    bedrooms: {
+      type: Number,
+      required: true,
+      min: 0
+    },
+    beds: {
+      type: Number,
+      required: true,
+      min: 1
+    },
+    bathrooms: {
+      type: Number,
+      required: true,
+      min: 0.5
+    }
+  },
+  amenities: [{
+    type: String,
+    enum: [
+      'wifi', 'kitchen', 'washer', 'dryer', 'air-conditioning', 'heating',
+      'tv', 'hot-tub', 'pool', 'gym', 'parking', 'elevator', 'wheelchair-accessible',
+      'pet-friendly', 'smoking-allowed', 'events-allowed', 'fireplace',
+      'breakfast', 'laptop-friendly', 'family-friendly', 'suitable-for-infants'
+    ]
+  }],
+  images: [{
+    url: { type: String, required: true, default: "http://localhost:500/api/listingimages/default.png" },
+    originalname: { type: String, required: true },
+    mimetype: { type: String, required: true },
+    size: { type: Number, required: true },
+    caption: String,
+    isPrimary: { type: Boolean, default: false },
+    uploadedAt: { type: Date, default: Date.now }
+  }],
+  availability: {
+    minStay: {
+      type: Number,
+      default: 1
+    },
+    maxStay: {
+      type: Number,
+      default: 365
+    },
+    instantBook: {
+      type: Boolean,
+      default: true
+    },
+    advanceNotice: {
+      type: String,
+      enum: ['same-day', '1-day', '2-days', '3-days', '7-days'],
+      default: 'same-day'
+    },
+    preparationTime: {
+      type: Number,
+      default: 0
+    },
+    availabilityWindow: {
+      type: Number,
+      default: 365
+    },
+    blockedDates: [{
+      startDate: Date,
+      endDate: Date,
+      reason: String
+    }]
+  },
+  houseRules: [{
+    type: String,
+    maxlength: [200, 'House rule cannot exceed 200 characters']
+  }],
+  cancellationPolicy: {
+    type: String,
+    enum: ['flexible', 'moderate', 'strict', 'super-strict'],
+    default: 'moderate'
+  },
+  status: {
+    type: String,
+    enum: ['draft', 'active', 'inactive', 'suspended'],
+    default: 'draft'
+  },
+  metrics: {
+    views: { type: Number, default: 0 },
+    favorites: { type: Number, default: 0 },
+    rating: { type: Number, default: 0 },
+    reviewCount: { type: Number, default: 0 }
+  },
+  featured: {
+    type: Boolean,
+    default: false
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now
+  }
+}, {
+  timestamps: true
 }
 ```
 
 ### Booking Model
 ```javascript
-{
-  user: ObjectId (ref: User),
-  listing: ObjectId (ref: Listing),
-  checkIn: Date,
-  checkOut: Date,
-  totalPrice: Number,
-  status: String,
-  createdAt: Date
+listing: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Listing',
+    required: true
+  },
+  guest: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  host: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  checkIn: {
+    type: Date,
+    required: true
+  },
+  checkOut: {
+    type: Date,
+    required: true
+  },
+  guests: {
+    adults: { type: Number, required: true, min: 1 },
+    children: { type: Number, default: 0, min: 0 },
+    infants: { type: Number, default: 0, min: 0 }
+  },
+  totalGuests: {
+    type: Number,
+    required: true
+  },
+  nights: {
+    type: Number,
+    required: true
+  },
+  pricing: {
+    basePrice: { type: Number, required: true },
+    totalNights: { type: Number, required: true },
+    subtotal: { type: Number, required: true },
+    cleaningFee: { type: Number, default: 0 },
+    serviceFee: { type: Number, default: 0 },
+    taxes: { type: Number, default: 0 },
+    discounts: {
+      weekly: { type: Number, default: 0 },
+      monthly: { type: Number, default: 0 },
+      coupon: { type: Number, default: 0 }
+    },
+    total: { type: Number, required: true }
+  },
+  status: {
+    type: String,
+    enum: ['pending', 'confirmed', 'cancelled', 'completed'],
+    default: 'pending'
+  },
+  paymentStatus: {
+    type: String,
+    enum: ['pending', 'paid', 'refunded', 'failed'],
+    default: 'pending'
+  },
+  paymentDetails: {
+    stripePaymentIntentId: String,
+    stripeChargeId: String,
+    paymentMethod: String,
+    currency: { type: String, default: 'USD' }
+  },
+  specialRequests: String,
+  cancellation: {
+    cancelledBy: {
+      type: String,
+      enum: ['guest', 'host', 'admin']
+    },
+    cancelledAt: Date,
+    reason: String,
+    refundAmount: Number
+  },
+  communication: [{
+    from: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    },
+    message: String,
+    timestamp: {
+      type: Date,
+      default: Date.now
+    },
+    type: {
+      type: String,
+      enum: ['message', 'system', 'automated'],
+      default: 'message'
+    }
+  }]
+}, {
+  timestamps: true
 }
 ```
 
