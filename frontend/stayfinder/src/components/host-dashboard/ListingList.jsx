@@ -4,28 +4,33 @@ import ListingCard from './ListingCard';
 import Spinner from '../../components/ui/Spinner';
 import Alert from '../../components/ui/Alert';
 
-const ListingList = ({ onEdit,listings,refresh }) => {
-  const {  loading, error, removeListing } = useHostListings();
+const ListingList = ({ onEdit, listings, refresh }) => {
+  const { loading, error, removeListing } = useHostListings();
   const [statusFilter, setStatusFilter] = useState('all');
-  const [filteredListings,setfilteredListings]=useState([])
-  useEffect(()=>{
-   const filter = listings.filter(listing => 
-    statusFilter === 'all' || listing.status === statusFilter
-  );
-  setfilteredListings(filter)
-  setTimeout(async ()=>{
-   const newfilter= await refresh()
-    setfilteredListings(newfilter)
-  },800)
+  const [filteredListings, setfilteredListings] = useState([])
+  useEffect(() => {
+    const filter = listings.filter(listing =>
+      statusFilter === 'all' || listing.status === statusFilter
+    );
+    setfilteredListings(filter)
+    if (!filteredListings) {
+      setTimeout(async () => {
+        const newfilter = await refresh()
+        setfilteredListings(newfilter)
+      }, 800)
+    }
   },[])
+  
 
-  async function deletelisting(id){
-    const response=await removeListing(id).unwrap()
+  async function deletelisting(id) {
+    const response = await removeListing(id).unwrap()
     console.log(response);
-    setTimeout(async ()=>{
-   const newfilter= await refresh()
-    setfilteredListings(newfilter)
-  },800)
+    if (!filteredListings) {
+      setTimeout(async () => {
+        const newfilter = await refresh()
+        setfilteredListings(newfilter)
+      }, 800)
+    }
   }
 
   if (loading) return <Spinner />;
@@ -34,7 +39,7 @@ const ListingList = ({ onEdit,listings,refresh }) => {
   return (
     <div>
       <div className="mb-4">
-        <select 
+        <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
           className="border rounded px-3 py-2"
@@ -52,10 +57,10 @@ const ListingList = ({ onEdit,listings,refresh }) => {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Array.isArray(filteredListings) && filteredListings.length>0 && filteredListings.map(listing => (
-            <ListingCard 
-              key={listing._id} 
-              listing={listing} 
+          {Array.isArray(filteredListings) && filteredListings.length > 0 && filteredListings.map(listing => (
+            <ListingCard
+              key={listing._id}
+              listing={listing}
               onEdit={onEdit}
               onDelete={deletelisting}
             />
