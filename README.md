@@ -119,24 +119,31 @@ stayfinder/
 }
 ```
 
-## 🚦 API Endpoints
+## 🚦 API Endpoints (Working)
 
 ### Authentication
 - `POST /api/auth/register` - User registration
 - `POST /api/auth/login` - User login
-- `GET /api/auth/profile` - Get user profile
+- `GET /api/auth/me` - Get user profile
 
 ### Listings
 - `GET /api/listings` - Get all listings with filters
 - `GET /api/listings/:id` - Get specific listing
 - `POST /api/listings` - Create new listing (hosts only)
 - `PUT /api/listings/:id` - Update listing (host only)
+- - `GET /api/listings/host/my-listings` -Host listings (host only)
 - `DELETE /api/listings/:id` - Delete listing (host only)
 
 ### Bookings
 - `POST /api/bookings` - Create new booking
-- `GET /api/bookings/user` - Get user's bookings
-- `GET /api/bookings/host` - Get host's property bookings
+- `GET /api/bookings/my-bookings` - Get user's bookings
+- `GET /api/bookings/:id` - Get bookings by id
+-  `GET /api/bookings/:id/status` - Update booking status (Host only)
+-  `GET /api/bookings/:id/cancel` -cancel booking
+
+### Payments
+- `POST /api/payments/create-payment-intent` - Create payment intent
+- `POST /api/payments/confirm-payment` -Confirm payment
 
 ## 🚀 Getting Started
 
