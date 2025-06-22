@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { FaSearch, FaFilter, FaMapMarkerAlt, FaCalendarAlt } from 'react-icons/fa';
 
-export default function SearchFilters({ onFilterChange,getlistings }) {
+export default function SearchFilters({ onFilterChange, getlistings }) {
   const [filters, setFilters] = useState({
     search: '',
     checkIn: '',
@@ -12,6 +12,10 @@ export default function SearchFilters({ onFilterChange,getlistings }) {
   });
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [isclearfilters, setisclearfilters] = useState(false);
+  
+  // Use ref to store the latest filters to avoid stale closure issues
+  const filtersRef = useRef(filters);
+  filtersRef.current = filters;
 
   // Debounce function
   const debounce = (func, delay) => {
@@ -25,15 +29,30 @@ export default function SearchFilters({ onFilterChange,getlistings }) {
   // Memoized debounced onChange handler
   const debouncedOnChange = useCallback(
     debounce((updatedFilters) => {
-      // Skip if we have checkIn without checkOut or minPrice without maxPrice
-      if (
-        (updatedFilters.checkIn && !updatedFilters.checkOut) ||
-        (updatedFilters.minPrice && !updatedFilters.maxPrice)
-      ) {
+      // Only skip if we have incomplete date range (checkIn without checkOut)
+      // But allow other filters to work independently
+      const hasIncompleteDate = updatedFilters.checkIn && !updatedFilters.checkOut;
+      const hasIncompletePriceRange = (updatedFilters.minPrice && !updatedFilters.maxPrice) || 
+                                     (!updatedFilters.minPrice && updatedFilters.maxPrice);
+      
+      // If we have incomplete date range, don't apply filters yet
+      if (hasIncompleteDate) {
         return;
       }
+      
+      // For price range, we can be more flexible - allow single price filter
+      // or just validate that minPrice <= maxPrice if both are provided
+      if (updatedFilters.minPrice && updatedFilters.maxPrice) {
+        const min = parseFloat(updatedFilters.minPrice);
+        const max = parseFloat(updatedFilters.maxPrice);
+        if (min > max) {
+          return; // Don't apply if min > max
+        }
+      }
+      
+      console.log('Applying filters:', updatedFilters);
       onFilterChange(updatedFilters);
-      setisclearfilters(false)
+      setisclearfilters(false);
     }, 600),
     [onFilterChange]
   );
@@ -44,20 +63,72 @@ export default function SearchFilters({ onFilterChange,getlistings }) {
       ...filters,
       [name]: value
     };
+    
+    console.log('Filter changed:', name, value);
     setFilters(updatedFilters);
+    
+    // Apply debounced change
     debouncedOnChange(updatedFilters);
+  };
+
+  const handleClearFilters = () => {
+    if (isclearfilters) return;
+    
+    const clearedFilters = {
+      search: '',
+      checkIn: '',
+      checkOut: '',
+      minPrice: '',
+      maxPrice: '',
+      propertyType: '',
+    };
+    
+    setFilters(clearedFilters);
+    setisclearfilters(true);
+    
+    // Clear filters immediately, don't wait for debounce
+    getlistings();
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    
+    // Force immediate filter application on form submit
+    const currentFilters = filtersRef.current;
+    
+    // Validate date range
+    if (currentFilters.checkIn && !currentFilters.checkOut) {
+      alert('Please select both check-in and check-out dates');
+      return;
+    }
+    
+    // Validate price range
+    if (currentFilters.minPrice && currentFilters.maxPrice) {
+      const min = parseFloat(currentFilters.minPrice);
+      const max = parseFloat(currentFilters.maxPrice);
+      if (min > max) {
+        alert('Minimum price cannot be greater than maximum price');
+        return;
+      }
+    }
+    
+    console.log('Form submitted with filters:', currentFilters);
+    onFilterChange(currentFilters);
+    setisclearfilters(false);
   };
 
   // Cleanup debounce on unmount
   useEffect(() => {
     return () => {
-      debouncedOnChange.cancel?.();
+      if (debouncedOnChange.cancel) {
+        debouncedOnChange.cancel();
+      }
     };
   }, [debouncedOnChange]);
 
   return (
     <div className="mb-8 w-full">
-      <form className="flex flex-col md:flex-row gap-2 md:gap-4 w-full">
+      <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-2 md:gap-4 w-full">
         {/* Location Search */}
         <div className="w-full md:flex-1 relative">
           <input
@@ -104,6 +175,7 @@ export default function SearchFilters({ onFilterChange,getlistings }) {
                     className="w-full pl-8 pr-3 py-2 border rounded-md"
                     value={filters.checkIn}
                     onChange={handleChange}
+                    min={new Date().toISOString().split('T')[0]} // Prevent past dates
                   />
                   <FaCalendarAlt className="absolute left-2 top-3 text-gray-400" />
                 </div>
@@ -114,6 +186,7 @@ export default function SearchFilters({ onFilterChange,getlistings }) {
                     className="w-full pl-8 pr-3 py-2 border rounded-md"
                     value={filters.checkOut}
                     onChange={handleChange}
+                    min={filters.checkIn || new Date().toISOString().split('T')[0]} // Ensure check-out is after check-in
                   />
                   <FaCalendarAlt className="absolute left-2 top-3 text-gray-400" />
                 </div>
@@ -132,6 +205,7 @@ export default function SearchFilters({ onFilterChange,getlistings }) {
                     className="w-full px-3 py-2 border rounded-md"
                     value={filters.minPrice}
                     onChange={handleChange}
+                    min="0"
                   />
                 </div>
                 <div className="flex-1 min-w-[120px]">
@@ -142,6 +216,7 @@ export default function SearchFilters({ onFilterChange,getlistings }) {
                     className="w-full px-3 py-2 border rounded-md"
                     value={filters.maxPrice}
                     onChange={handleChange}
+                    min={filters.minPrice || "0"}
                   />
                 </div>
               </div>
@@ -163,30 +238,17 @@ export default function SearchFilters({ onFilterChange,getlistings }) {
               </select>
             </div>
           </div>
+          
           <button
-            onClick={() => {
-              setFilters({
-                search: '',
-                checkIn: '',
-                checkOut: '',
-                minPrice: '',
-                maxPrice: '',
-                propertyType: '',
-              });
-
-              if(isclearfilters) return
-             
-                getlistings()
-                setisclearfilters(true)
-              
-            }}
-            className="inline-flex mt-2 items-center bg-red-600 px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+            type="button"
+            onClick={handleClearFilters}
+            className="inline-flex mt-2 items-center bg-red-600 px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isclearfilters}
           >
-            Clear filters
+            {isclearfilters ? 'Filters Cleared' : 'Clear filters'}
           </button>
         </div>
       )}
-
     </div>
   );
 }
