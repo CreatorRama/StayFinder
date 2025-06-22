@@ -488,22 +488,23 @@ router.get('/', [
 
     // Date availability check
     if (checkIn && checkOut) {
+      console.log('Finding listings with bookings for:', checkIn, checkOut);
       const checkInDate = new Date(checkIn);
       const checkOutDate = new Date(checkOut);
 
-      // Find bookings that conflict with requested dates
-      const conflictingBookings = await Booking.find({
-        $or: [
-          {
-            checkIn: { $lt: checkOutDate },
-            checkOut: { $gt: checkInDate }
-          }
-        ],
-        status: { $in: ['confirmed', 'pending'] }
+      // Find bookings that overlap with the requested date range
+      const bookingsInRange = await Booking.find({
+        $and: [
+          { checkIn: { $lt: checkOutDate } },    // Booking starts before our checkout
+          { checkOut: { $gt: checkInDate } },    // Booking ends after our checkin
+          { status: { $in: ['confirmed', 'pending'] } }
+        ]
       }).distinct('listing');
 
-      filter._id = { $nin: conflictingBookings };
-      console.log(filter._id);
+      console.log('Listings with bookings in this date range:', bookingsInRange.length);
+
+      // INCLUDE only these listings (not exclude them)
+      filter._id = { $in: bookingsInRange };  // Changed from $nin to $in
     }
 
     // Sort options
