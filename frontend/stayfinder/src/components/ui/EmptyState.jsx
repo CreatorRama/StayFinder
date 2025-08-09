@@ -1,5 +1,4 @@
-import { Link } from 'react-router-dom';
-import { useListings } from '../../hooks/uselistings';
+
 
 export default function EmptyState({ 
   title, 
@@ -8,9 +7,6 @@ export default function EmptyState({
   actionLink 
 }) {
 
-   const { 
-      getListings, 
-    } = useListings();
 
   return (
     <div className="text-center py-12">
@@ -23,7 +19,6 @@ export default function EmptyState({
       <p className="text-gray-500 mb-6">{description}</p>
       {actionText && actionLink && (
         <button
-          onClick={()=>{getListings()}}
           className="inline-flex items-center bg-red-600 px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
         >
           {actionText}

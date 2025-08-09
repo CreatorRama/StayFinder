@@ -5,6 +5,7 @@ backend/token.txt
 backend/package-lock.json
 backend/dist
 backend/*.log
+backend/token.txt
 
 # Frontend
 frontend/stayfinder/node_modules
