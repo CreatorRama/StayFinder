@@ -56,7 +56,7 @@ const uploadListingImages = multer({
 // Helper function to process images
 const processImages = (files, existingImages = []) => {
   const newImages = files.map(file => ({
-    url: `https://stayfinder-yczq.onrender.com/api/listingimages/${file.filename}`,
+    url: `http://localhost:500/api/listingimages/${file.filename}`,
     originalname: file.originalname,
     mimetype: file.mimetype,
     size: file.size,
@@ -146,6 +146,8 @@ router.post('/',
       }
 
       const listing = await Listing.create(listingData);
+
+      console.log(listing._id);
 
       const populatedListing = await Listing.findById(listing._id)
         .populate('host', 'firstName lastName avatar');
@@ -310,7 +312,7 @@ router.put('/:id',
       if (req.files?.length) {
         console.log('Processing new images:', req.files.length);
         const newImages = req.files.map(file => ({
-          url: `https://stayfinder-yczq.onrender.com/api/listingimages/${file.filename}`,
+          url: `http://localhost:5000/api/listingimages/${file.filename}`,
           originalname: file.originalname,
           mimetype: file.mimetype,
           size: file.size,
@@ -488,23 +490,25 @@ router.get('/', [
 
     // Date availability check
     if (checkIn && checkOut) {
+      console.log('Finding listings with bookings for:', checkIn, checkOut);
       const checkInDate = new Date(checkIn);
       const checkOutDate = new Date(checkOut);
 
-      // Find bookings that conflict with requested dates
-      const conflictingBookings = await Booking.find({
-        $or: [
-          {
-            checkIn: { $lt: checkOutDate },
-            checkOut: { $gt: checkInDate }
-          }
-        ],
-        status: { $in: ['confirmed', 'pending'] }
+      // Find bookings that overlap with the requested date range
+      const bookingsInRange = await Booking.find({
+        $and: [
+          { checkIn: { $lt: checkOutDate } },    // Booking starts before our checkout
+          { checkOut: { $gt: checkInDate } },    // Booking ends after our checkin
+          { status: { $in: ['confirmed', 'pending'] } }
+        ]
       }).distinct('listing');
 
-      filter._id = { $nin: conflictingBookings };
-      console.log(filter._id);
+      console.log('Listings with bookings in this date range:', bookingsInRange.length);
+
+      // INCLUDE only these listings (not exclude them)
+      filter._id = { $in: bookingsInRange };  // Changed from $nin to $in
     }
+
 
     // Sort options
     const sortOptions = {};
@@ -619,68 +623,6 @@ router.get('/:id', async (req, res) => {
 });
 
 
-// Delete an image from listing (Host only)
-router.delete('/:id/images/:imageId', auth, async (req, res) => {
-  try {
-    const listing = await Listing.findById(req.params.id);
-    if (!listing) {
-      return res.status(404).json({
-        success: false,
-        message: 'Listing not found'
-      });
-    }
-
-    // Check if user owns the listing
-    if (listing.host.toString() !== req.user.id) {
-      return res.status(403).json({
-        success: false,
-        message: 'Not authorized to modify this listing'
-      });
-    }
-
-    // Find the image to delete
-    const imageToDelete = listing.images.find(
-      img => img._id.toString() === req.params.imageId
-    );
-
-    if (!imageToDelete) {
-      return res.status(404).json({
-        success: false,
-        message: 'Image not found in this listing'
-      });
-    }
-
-    // Remove the image from the array
-    listing.images = listing.images.filter(
-      img => img._id.toString() !== req.params.imageId
-    );
-
-    // If we deleted the primary image and there are other images, make the first one primary
-    if (imageToDelete.isPrimary && listing.images.length > 0) {
-      listing.images[0].isPrimary = true;
-    }
-
-    // Delete the actual file from server
-    const filePath = path.join(__dirname, '../../listingimages', path.basename(imageToDelete.url));
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
-    }
-
-    await listing.save();
-
-    res.json({
-      success: true,
-      message: 'Image deleted successfully',
-      data: listing
-    });
-  } catch (error) {
-    console.error('Delete image error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Server error while deleting image'
-    });
-  }
-});
 
 
 // Delete listing (Host only)

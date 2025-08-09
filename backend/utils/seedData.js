@@ -15,16 +15,15 @@ function generateIndianMobileNumber() {
   const restDigits = faker.string.numeric(9);
   return firstDigit + restDigits;
 }
+
 const seedUsers = async (numUsers = 5) => {
   const users = [];
   const tokens = [];
 
-  
   const minHosts = 1;
   let hostsCreated = 0;
 
   for (let i = 0; i < numUsers; i++) {
-   
     const role = hostsCreated < minHosts
       ? 'host'
       : faker.helpers.arrayElement(['guest', 'admin']);
@@ -56,7 +55,6 @@ const seedUsers = async (numUsers = 5) => {
   await User.deleteMany({});
   const insertedUsers = await User.insertMany(users);
 
- 
   insertedUsers.forEach(user => {
     const token = jwt.sign(
       { id: user._id, email: user.email, role: user.role },
@@ -111,7 +109,11 @@ const seedListings = async (hosts, numListings = 5) => {
       images: [
         {
           url: faker.image.url(),
-          isPrimary: true
+          originalname: `listing-${i}-${Date.now()}.jpg`,
+          mimetype: 'image/jpeg',
+          size: faker.number.int({ min: 100000, max: 2000000 }), // Random size between 100KB and 2MB
+          isPrimary: true,
+          uploadedAt: new Date()
         }
       ],
       status: 'active',
@@ -136,7 +138,7 @@ const seedDatabase = async () => {
     const hosts = users.filter(user => user.role === 'host');
     console.log(`Available Hosts: ${hosts.length}`); 
     if (hosts.length === 0) throw new Error('No hosts found!');
-    await seedListings(hosts, 20);
+    await seedListings(hosts, 40);
 
     mongoose.disconnect();
     process.exit(0);
