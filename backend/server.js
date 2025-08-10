@@ -29,14 +29,14 @@ app.use(helmet({
       'frame-src': ["'self'", "https://js.stripe.com"],
       'connect-src': ["'self'", "https://api.stripe.com"],
       'style-src': ["'self'", "'unsafe-inline'", "https://js.stripe.com"],
-      'img-src': ["'self'", "https://*.stripe.com"], // Add your backend URL
+      'img-src': ["'self'", "https://*.stripe.com"], 
     }
   },
   crossOriginResourcePolicy: false 
 }));
 
 app.use(cors({
-  origin: ['http://localhost:5003','https://stay-finder-pearl.vercel.app'], // Add your frontend URL
+  origin: ['https://stay-finder-4a7u.vercel.app'], 
   methods: ['GET', 'POST', 'PUT','PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
